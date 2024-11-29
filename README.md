@@ -1,32 +1,48 @@
 # Snake Game
 
-A mobile-friendly Snake game built with HTML5, CSS, and JavaScript. Play it on any device with touch controls or keyboard arrows.
+Классическая игра "Змейка" с современным интерфейсом и дополнительными функциями.
 
-## Features
+## Играть онлайн
 
-- Responsive design that works on both mobile and desktop
-- Touch controls for mobile devices
-- Keyboard controls for desktop
-- Progressive difficulty
-- Score tracking
-- Game over screen
+Вы можете играть в игру онлайн по ссылке: [https://volodyaiam.github.io/snake-game/](https://volodyaiam.github.io/snake-game/)
 
-## How to Play
+## Особенности
 
-1. Press the "Start Game" button
-2. Use touch controls (on mobile) or arrow keys (on desktop) to control the snake
-3. Collect red squares to grow and increase your score
-4. Avoid hitting walls and the snake's own tail
-5. Try to achieve the highest score possible!
+- Три уровня сложности (Легкий, Средний, Сложный)
+- Выбор цвета змейки
+- Таблица рекордов с сохранением результатов
+- Звуковые эффекты
+- Адаптивный дизайн для мобильных устройств
+- Сенсорное управление на мобильных устройствах
+- Управление клавишами стрелок на компьютере
 
-## Play Online
+## Установка локальной версии
 
-You can play the game online at: [https://volodyaiam.github.io/snake-game/](https://volodyaiam.github.io/snake-game/)
+1. Склонируйте репозиторий:
+```bash
+git clone https://github.com/VolodyaIAM/snake-game.git
+```
 
-## Development
+2. Откройте `index.html` в вашем браузере
 
-To run the game locally:
+## Как играть
 
-1. Clone this repository
-2. Open index.html in your browser
-3. Start playing!
+1. Выберите уровень сложности
+2. Выберите цвет змейки
+3. Нажмите "Начать игру"
+4. Используйте стрелки на клавиатуре или сенсорные кнопки для управления
+5. Собирайте еду для увеличения счета
+6. После окончания игры введите свое имя для сохранения результата
+
+## Технические детали
+
+- Использует HTML5 Canvas для отрисовки
+- Сохранение рекордов в IndexedDB
+- Адаптивный дизайн с CSS Flexbox
+- Чистый JavaScript без зависимостей
+
+## Звуковые эффекты
+
+Звуковые эффекты взяты с сайта mixkit.co:
+- Звук поедания еды: [Chewing Crunchy Food](https://mixkit.co/free-sound-effects/eat/)
+- Звук окончания игры: [Game Over Arcade](https://mixkit.co/free-sound-effects/game-over/)
