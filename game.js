@@ -74,6 +74,13 @@ class SnakeGame {
         this.showScreen('menu');
         this.updateSoundToggle();
         console.log('SnakeGame initialized');
+        
+        // Prevent scrolling with arrow keys
+        window.addEventListener('keydown', (e) => {
+            if([37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+                e.preventDefault();
+            }
+        }, false);
     }
     
     setupCanvas() {
@@ -372,43 +379,116 @@ class SnakeGame {
     }
     
     saveHighScore() {
-        const playerName = document.getElementById('playerName').value.trim();
-        if (playerName) {
-            this.highScores.push({
+        const playerName = document.getElementById('playerName').value.trim() || 'Аноним';
+        if (this.score > 0) {
+            const newScore = {
                 name: playerName,
                 score: this.score,
-                difficulty: this.difficulty.value
-            });
+                difficulty: this.difficulty.value,
+                date: new Date().toISOString()
+            };
             
-            // Sort and keep only top 10 scores
+            this.highScores.push(newScore);
             this.highScores.sort((a, b) => b.score - a.score);
             this.highScores = this.highScores.slice(0, 10);
+
+            // Сохраняем в localStorage как резервное хранилище
+            localStorage.setItem('snakeHighScores', JSON.stringify(this.highScores));
+
+            // Сохраняем в IndexedDB
+            const request = indexedDB.open('SnakeGameDB', 1);
             
-            // Save to IndexedDB and localStorage
-            saveHighScores(this.highScores);
-            
-            // Show high scores screen
+            request.onerror = (event) => {
+                console.error('IndexedDB error:', event.target.error);
+            };
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('highScores')) {
+                    db.createObjectStore('highScores', { keyPath: 'id', autoIncrement: true });
+                }
+            };
+
+            request.onsuccess = (event) => {
+                const db = event.target.result;
+                const transaction = db.transaction(['highScores'], 'readwrite');
+                const store = transaction.objectStore('highScores');
+
+                // Очищаем старые рекорды
+                const clearRequest = store.clear();
+                clearRequest.onsuccess = () => {
+                    // Добавляем новые рекорды
+                    this.highScores.forEach(score => {
+                        store.add(score);
+                    });
+                };
+            };
+
             this.showHighScores();
-            console.log('High score saved:', this.highScores);
         }
     }
-    
-    showHighScores() {
-        const highscoresList = document.getElementById('highscoresList');
-        highscoresList.innerHTML = '';
+
+    async loadHighScores() {
+        return new Promise((resolve) => {
+            const request = indexedDB.open('SnakeGameDB', 1);
+            
+            request.onerror = () => {
+                console.error('Failed to open IndexedDB, falling back to localStorage');
+                const scores = JSON.parse(localStorage.getItem('snakeHighScores')) || [];
+                resolve(scores);
+            };
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('highScores')) {
+                    db.createObjectStore('highScores', { keyPath: 'id', autoIncrement: true });
+                }
+            };
+
+            request.onsuccess = (event) => {
+                const db = event.target.result;
+                const transaction = db.transaction(['highScores'], 'readonly');
+                const store = transaction.objectStore('highScores');
+                const getAllRequest = store.getAll();
+
+                getAllRequest.onsuccess = () => {
+                    const scores = getAllRequest.result || [];
+                    scores.sort((a, b) => b.score - a.score);
+                    resolve(scores.slice(0, 10));
+                };
+
+                getAllRequest.onerror = () => {
+                    console.error('Failed to get scores from IndexedDB, falling back to localStorage');
+                    const scores = JSON.parse(localStorage.getItem('snakeHighScores')) || [];
+                    resolve(scores);
+                };
+            };
+        });
+    }
+
+    async showHighScores() {
+        const highScoresList = document.getElementById('highscoresList');
+        highScoresList.innerHTML = '';
         
+        // Загружаем рекорды
+        this.highScores = await this.loadHighScores();
+        
+        if (this.highScores.length === 0) {
+            highScoresList.innerHTML = '<div class="highscore-item">Пока нет рекордов</div>';
+            return;
+        }
+
         this.highScores.forEach((score, index) => {
             const scoreElement = document.createElement('div');
             scoreElement.className = 'highscore-item';
             scoreElement.innerHTML = `
-                <span>${index + 1}. ${score.name} (${score.difficulty})</span>
-                <span>${score.score}</span>
+                ${index + 1}. ${score.name} - ${score.score} 
+                <span style="font-size: 0.8em">(${score.difficulty})</span>
             `;
-            highscoresList.appendChild(scoreElement);
+            highScoresList.appendChild(scoreElement);
         });
-        
+
         this.showScreen('highscores');
-        console.log('High scores shown');
     }
 }
 
