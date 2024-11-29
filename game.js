@@ -29,8 +29,8 @@ class SnakeGame {
         
         // Sound
         this.sounds = {
-            eat: new Audio('https://assets.mixkit.co/active_storage/sfx/2198/2198-preview.mp3'),
-            die: new Audio('https://assets.mixkit.co/active_storage/sfx/2658/2658-preview.mp3')
+            eat: new Audio('https://assets.mixkit.co/active_storage/sfx/2244/2244-preview.mp3'),
+            die: new Audio('https://assets.mixkit.co/active_storage/sfx/470/470-preview.mp3')
         };
         
         // Предзагрузка звуков
