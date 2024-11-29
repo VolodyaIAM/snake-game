@@ -26,6 +26,18 @@ body {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 }
 
+.game-screen, .highscores-screen, .game-over-screen {
+    display: none;
+}
+
+.menu-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
 canvas {
     background-color: #2C3E50;
     border: 3px solid #ECF0F1;
@@ -87,14 +99,6 @@ button:hover {
 
 .touch-controls button:active {
     background-color: rgba(41, 128, 185, 0.8);
-}
-
-.menu-screen, .game-screen, .highscores-screen, .game-over-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    width: 100%;
 }
 
 .difficulty-select, .color-select {
@@ -159,6 +163,10 @@ input[type="text"] {
     width: 100%;
     max-width: 300px;
     margin: 10px 0;
+}
+
+.active-screen {
+    display: flex !important;
 }
 
 @media (max-width: 600px) {

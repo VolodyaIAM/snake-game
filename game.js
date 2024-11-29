@@ -89,10 +89,27 @@ class SnakeGame {
     }
     
     showScreen(screen) {
-        this.menuScreen.style.display = screen === 'menu' ? 'flex' : 'none';
-        this.gameScreen.style.display = screen === 'game' ? 'flex' : 'none';
-        this.gameOverScreen.style.display = screen === 'gameOver' ? 'flex' : 'none';
-        this.highscoresScreen.style.display = screen === 'highscores' ? 'flex' : 'none';
+        // Remove active class from all screens
+        this.menuScreen.classList.remove('active-screen');
+        this.gameScreen.classList.remove('active-screen');
+        this.gameOverScreen.classList.remove('active-screen');
+        this.highscoresScreen.classList.remove('active-screen');
+        
+        // Add active class to the selected screen
+        switch(screen) {
+            case 'menu':
+                this.menuScreen.classList.add('active-screen');
+                break;
+            case 'game':
+                this.gameScreen.classList.add('active-screen');
+                break;
+            case 'gameOver':
+                this.gameOverScreen.classList.add('active-screen');
+                break;
+            case 'highscores':
+                this.highscoresScreen.classList.add('active-screen');
+                break;
+        }
     }
     
     toggleSound() {
