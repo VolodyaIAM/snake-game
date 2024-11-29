@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Press Start 2P', cursive;
 }
 
 body {
@@ -9,7 +10,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f0f0;
+    background-color: #2C3E50;
     touch-action: none;
 }
 
@@ -20,18 +21,22 @@ body {
     gap: 20px;
     padding: 20px;
     max-width: 100%;
+    background-color: #34495E;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 }
 
 canvas {
-    background-color: #fff;
-    border: 2px solid #333;
+    background-color: #2C3E50;
+    border: 3px solid #ECF0F1;
+    border-radius: 10px;
     max-width: 100%;
 }
 
 .score {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
+    font-size: 18px;
+    color: #ECF0F1;
+    margin: 10px 0;
 }
 
 .controls {
@@ -42,14 +47,19 @@ canvas {
     max-width: 300px;
 }
 
-#startBtn {
-    padding: 10px 20px;
-    font-size: 18px;
-    background-color: #4CAF50;
+button {
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #3498DB;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980B9;
 }
 
 .touch-controls {
@@ -68,7 +78,7 @@ canvas {
     width: 60px;
     height: 60px;
     font-size: 24px;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(52, 152, 219, 0.8);
     border: none;
     border-radius: 50%;
     cursor: pointer;
@@ -76,5 +86,98 @@ canvas {
 }
 
 .touch-controls button:active {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(41, 128, 185, 0.8);
+}
+
+.menu-screen, .game-screen, .highscores-screen, .game-over-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.difficulty-select, .color-select {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 300px;
+}
+
+select {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    background-color: #ECF0F1;
+    border: none;
+}
+
+label {
+    color: #ECF0F1;
+    font-size: 14px;
+}
+
+.highscores-list {
+    width: 100%;
+    max-width: 300px;
+    background-color: #2C3E50;
+    border-radius: 10px;
+    padding: 15px;
+    color: #ECF0F1;
+}
+
+.highscore-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #34495E;
+}
+
+.sound-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    padding: 5px;
+    font-size: 20px;
+    background-color: rgba(52, 152, 219, 0.5);
+}
+
+h1, h2 {
+    color: #ECF0F1;
+    text-align: center;
+    margin: 10px 0;
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: none;
+    width: 100%;
+    max-width: 300px;
+    margin: 10px 0;
+}
+
+@media (max-width: 600px) {
+    .game-container {
+        padding: 10px;
+    }
+    
+    .touch-controls button {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .score {
+        font-size: 14px;
+    }
+    
+    button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
 }

@@ -5,21 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Snake Game</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="game-container">
-        <canvas id="gameCanvas"></canvas>
-        <div class="score">Score: <span id="scoreValue">0</span></div>
-        <div class="controls">
-            <button id="startBtn">Start Game</button>
-            <div class="touch-controls">
-                <button id="upBtn">↑</button>
-                <div class="horizontal-controls">
-                    <button id="leftBtn">←</button>
-                    <button id="rightBtn">→</button>
-                </div>
-                <button id="downBtn">↓</button>
+        <div class="menu-screen" id="menuScreen">
+            <h1>Snake Game</h1>
+            <div class="difficulty-select">
+                <label for="difficulty">Difficulty:</label>
+                <select id="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
             </div>
+            <div class="color-select">
+                <label for="snakeColor">Snake Color:</label>
+                <select id="snakeColor">
+                    <option value="#4CAF50">Green</option>
+                    <option value="#2196F3">Blue</option>
+                    <option value="#F44336">Red</option>
+                    <option value="#9C27B0">Purple</option>
+                    <option value="#FF9800">Orange</option>
+                </select>
+            </div>
+            <button id="startBtn">Start Game</button>
+            <button id="highscoresBtn">High Scores</button>
+        </div>
+
+        <div class="game-screen" id="gameScreen" style="display: none;">
+            <div class="score">Score: <span id="scoreValue">0</span></div>
+            <canvas id="gameCanvas"></canvas>
+            <div class="controls">
+                <div class="touch-controls">
+                    <button id="upBtn">↑</button>
+                    <div class="horizontal-controls">
+                        <button id="leftBtn">←</button>
+                        <button id="rightBtn">→</button>
+                    </div>
+                    <button id="downBtn">↓</button>
+                </div>
+            </div>
+            <button id="soundToggle" class="sound-toggle">🔊</button>
+        </div>
+
+        <div class="highscores-screen" id="highscoresScreen" style="display: none;">
+            <h2>High Scores</h2>
+            <div class="highscores-list" id="highscoresList"></div>
+            <button id="backToMenuBtn">Back to Menu</button>
+        </div>
+
+        <div class="game-over-screen" id="gameOverScreen" style="display: none;">
+            <h2>Game Over!</h2>
+            <p>Score: <span id="finalScore">0</span></p>
+            <input type="text" id="playerName" placeholder="Enter your name" maxlength="10">
+            <button id="saveScoreBtn">Save Score</button>
+            <button id="playAgainBtn">Play Again</button>
+            <button id="menuBtn">Main Menu</button>
         </div>
     </div>
     <script src="game.js"></script>
