@@ -388,163 +388,79 @@ class SnakeGame {
                 date: new Date().toISOString()
             };
             
-            this.highScores.push(newScore);
-            this.highScores.sort((a, b) => b.score - a.score);
-            this.highScores = this.highScores.slice(0, 10);
-
-            // Сохраняем в localStorage как резервное хранилище
-            localStorage.setItem('snakeHighScores', JSON.stringify(this.highScores));
-
-            // Сохраняем в IndexedDB
-            const request = indexedDB.open('SnakeGameDB', 1);
+            // Get reference to Firebase database
+            const db = firebase.database();
+            const scoresRef = db.ref('highScores');
             
-            request.onerror = (event) => {
-                console.error('IndexedDB error:', event.target.error);
-            };
-
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains('highScores')) {
-                    db.createObjectStore('highScores', { keyPath: 'id', autoIncrement: true });
-                }
-            };
-
-            request.onsuccess = (event) => {
-                const db = event.target.result;
-                const transaction = db.transaction(['highScores'], 'readwrite');
-                const store = transaction.objectStore('highScores');
-
-                // Очищаем старые рекорды
-                const clearRequest = store.clear();
-                clearRequest.onsuccess = () => {
-                    // Добавляем новые рекорды
-                    this.highScores.forEach(score => {
-                        store.add(score);
-                    });
-                };
-            };
-
-            this.showHighScores();
-        }
-    }
-
-    async loadHighScores() {
-        return new Promise((resolve) => {
-            const request = indexedDB.open('SnakeGameDB', 1);
-            
-            request.onerror = () => {
-                console.error('Failed to open IndexedDB, falling back to localStorage');
-                const scores = JSON.parse(localStorage.getItem('snakeHighScores')) || [];
-                resolve(scores);
-            };
-
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains('highScores')) {
-                    db.createObjectStore('highScores', { keyPath: 'id', autoIncrement: true });
-                }
-            };
-
-            request.onsuccess = (event) => {
-                const db = event.target.result;
-                const transaction = db.transaction(['highScores'], 'readonly');
-                const store = transaction.objectStore('highScores');
-                const getAllRequest = store.getAll();
-
-                getAllRequest.onsuccess = () => {
-                    const scores = getAllRequest.result || [];
+            // Get current scores
+            scoresRef.once('value')
+                .then((snapshot) => {
+                    const scores = snapshot.val() || [];
+                    scores.push(newScore);
+                    
+                    // Sort and keep only top 10 scores
                     scores.sort((a, b) => b.score - a.score);
-                    resolve(scores.slice(0, 10));
-                };
-
-                getAllRequest.onerror = () => {
-                    console.error('Failed to get scores from IndexedDB, falling back to localStorage');
-                    const scores = JSON.parse(localStorage.getItem('snakeHighScores')) || [];
-                    resolve(scores);
-                };
-            };
-        });
+                    const top10Scores = scores.slice(0, 10);
+                    
+                    // Save to Firebase
+                    return scoresRef.set(top10Scores);
+                })
+                .then(() => {
+                    // Show high scores screen
+                    this.showHighScores();
+                    console.log('High score saved to Firebase');
+                })
+                .catch(error => {
+                    console.error('Error saving score:', error);
+                    alert('Error saving score. Please try again.');
+                });
+        }
     }
 
     async showHighScores() {
         const highScoresList = document.getElementById('highscoresList');
-        highScoresList.innerHTML = '';
+        highScoresList.innerHTML = '<div class="loading">Loading scores...</div>';
         
-        // Загружаем рекорды
-        this.highScores = await this.loadHighScores();
-        
-        if (this.highScores.length === 0) {
-            highScoresList.innerHTML = '<div class="highscore-item">Пока нет рекордов</div>';
-            return;
+        try {
+            // Get reference to Firebase database
+            const db = firebase.database();
+            const scoresRef = db.ref('highScores');
+            
+            // Get scores
+            const snapshot = await scoresRef.once('value');
+            const scores = snapshot.val() || [];
+            
+            highScoresList.innerHTML = '';
+            
+            if (scores.length === 0) {
+                highScoresList.innerHTML = '<div class="highscore-item">No high scores yet</div>';
+                return;
+            }
+            
+            scores.forEach((score, index) => {
+                const scoreElement = document.createElement('div');
+                scoreElement.className = 'highscore-item';
+                scoreElement.innerHTML = `
+                    ${index + 1}. ${score.name} - ${score.score} 
+                    <span style="font-size: 0.8em">(${score.difficulty})</span>
+                `;
+                highScoresList.appendChild(scoreElement);
+            });
+        } catch (error) {
+            console.error('Error loading scores:', error);
+            highScoresList.innerHTML = '<div class="error">Error loading scores. Please try again.</div>';
         }
-
-        this.highScores.forEach((score, index) => {
-            const scoreElement = document.createElement('div');
-            scoreElement.className = 'highscore-item';
-            scoreElement.innerHTML = `
-                ${index + 1}. ${score.name} - ${score.score} 
-                <span style="font-size: 0.8em">(${score.difficulty})</span>
-            `;
-            highScoresList.appendChild(scoreElement);
-        });
-
+        
         this.showScreen('highscores');
     }
 }
 
 function saveHighScores(scores) {
-    localStorage.setItem('snakeHighScores', JSON.stringify(scores));
-    // Добавляем сохранение в IndexedDB для постоянного хранения
-    const request = indexedDB.open('SnakeGameDB', 1);
-    
-    request.onerror = (event) => {
-        console.error('IndexedDB error:', event.target.error);
-    };
-
-    request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        if (!db.objectStoreNames.contains('highScores')) {
-            db.createObjectStore('highScores', { keyPath: 'id' });
-        }
-    };
-
-    request.onsuccess = (event) => {
-        const db = event.target.result;
-        const transaction = db.transaction(['highScores'], 'readwrite');
-        const store = transaction.objectStore('highScores');
-        store.put({ id: 1, scores: scores });
-    };
+    // Not used
 }
 
 function loadHighScores() {
-    // Сначала пробуем загрузить из IndexedDB
-    const request = indexedDB.open('SnakeGameDB', 1);
-    
-    request.onerror = () => {
-        // Если не получилось, загружаем из localStorage
-        const scores = JSON.parse(localStorage.getItem('snakeHighScores')) || [];
-        return scores;
-    };
-
-    request.onsuccess = (event) => {
-        const db = event.target.result;
-        const transaction = db.transaction(['highScores'], 'readonly');
-        const store = transaction.objectStore('highScores');
-        const getRequest = store.get(1);
-        
-        getRequest.onsuccess = () => {
-            if (getRequest.result) {
-                return getRequest.result.scores;
-            } else {
-                // Если в IndexedDB ничего нет, загружаем из localStorage
-                const scores = JSON.parse(localStorage.getItem('snakeHighScores')) || [];
-                return scores;
-            }
-        };
-    };
-
-    // Возвращаем данные из localStorage как запасной вариант
-    return JSON.parse(localStorage.getItem('snakeHighScores')) || [];
+    // Not used
 }
 
 // Initialize game when page loads
