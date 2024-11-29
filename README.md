@@ -21,7 +21,7 @@ A mobile-friendly Snake game built with HTML5, CSS, and JavaScript. Play it on a
 
 ## Play Online
 
-You can play the game online at: [GitHub Pages URL will be here]
+You can play the game online at: [https://volodyaiam.github.io/snake-game/](https://volodyaiam.github.io/snake-game/)
 
 ## Development
 
